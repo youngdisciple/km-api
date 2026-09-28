@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Domain\Models\VendorsModel;
+use App\Exceptions\InvalidResourceIdException;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
@@ -96,9 +97,14 @@ class VendorsController extends BaseController
         //! what if the vendor was False: i.e. NOT FOUND?
         // TODO: Prepare and return a VALID HTTP error response (option #1)
         if (!$vendor) {
-            throw new HttpNotFoundException(
+            // throw new HttpNotFoundException(
+            //     $request,
+            //     "There was no matching record for vendor_id ($vendor_id)"
+            // );
+
+            throw new InvalidResourceIdException(
                 $request,
-                "There was no matching record for vendor_id ($vendor_id)"
+                "There was no matching record for vendor_id"
             );
         }
 
