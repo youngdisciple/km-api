@@ -17,6 +17,7 @@ use Psr\Http\Server\MiddlewareInterface;
  * by acting on the request, generating the response, or forwarding the
  * request to a subsequent middleware and possibly acting on its response.
  */
+
 class ContentNegotiationMiddleware implements MiddlewareInterface
 {
     /**
@@ -37,7 +38,25 @@ class ContentNegotiationMiddleware implements MiddlewareInterface
         $acceptHeader = $request->getHeader('Accept')[0];
 
         if (!in_array($acceptHeader, $validAcceptHeaders)) {
-            throw new HttpNotAcceptableException($request);
+            // Method #1
+            // throw new HttpNotAcceptableException($request);
+
+            // Method #2
+            $psr17Factory = new \Nyholm\Psr7\Factory\Psr17Factory();
+            $response = $psr17Factory->createResponse();// You can pass a status code to the createResponse method.
+
+            $errorResponse = [
+                'code' => 406,
+                'message' => 'Not Acceptable',
+                'description' =>  "The server cannot produce a response matching the criteria defined in the request's content negotiation headers.",
+            ];
+
+            // Taken from base controller
+
+            $payload = json_encode($errorResponse, JSON_UNESCAPED_SLASHES | JSON_PARTIAL_OUTPUT_ON_ERROR);
+            //-- Write JSON data into the response's body.
+            $response->getBody()->write($payload);
+            return $response->withStatus(406)->withAddedHeader(HEADERS_CONTENT_TYPE, APP_MEDIA_TYPE_JSON);
         }
 
         // Optional: Handle the incoming request
