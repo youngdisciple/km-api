@@ -42,7 +42,7 @@ class VendorsModel extends BaseModel
     {
         $sql = "SELECT * FROM switches WHERE vendor_id = :vendor_id";
 
-        return $this->fetchSingle($sql, [
+        return $this->fetchAll($sql, [
             'vendor_id' => $vendor_id
         ]);
     }
