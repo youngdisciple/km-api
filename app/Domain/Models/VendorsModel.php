@@ -11,22 +11,22 @@ class VendorsModel extends BaseModel
     function getVendors(array $filters): array
     {
         $sql = "SELECT * FROM vendors WHERE 1 = 1";
-        $conditions = [];
+        $args = [];
 
         $name = $filters['name'] ?? '';
         if (!empty($name)) {
             $sql .= " AND name LIKE CONCAT('%', :name, '%')";
-            $conditions['name'] = $name;
+            $args['name'] = $name;
         }
 
         $country = $filters['country'] ?? '';
         if (!empty($country)) {
             $sql .= " AND country LIKE CONCAT('%', :country, '%')";
-            $conditions['country'] = $country;
+            $args['country'] = $country;
         }
 
         // TODO: Append the LIMIT
-        return $this->paginate($sql, $conditions);
+        return $this->paginate($sql, $args);
     }
 
     function getVendorsById(int $vendor_id): array | False
