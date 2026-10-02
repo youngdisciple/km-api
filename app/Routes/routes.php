@@ -19,10 +19,10 @@ return static function (Slim\App $app): void {
     // ROUTE: /vendors
 
     // GET /vendors
-    $app->get('/vendors', [VendorsController::class, 'handleGetVendors']);
+    $app->get('/vendors', [VendorsController::class, 'index']);
 
     // GET /vendors/{vendor_id}
-    $app->get('/vendors/{vendor_id}', [VendorsController::class, 'handleGetVendorById']);
+    $app->get('/vendors/{vendor_id}', [VendorsController::class, 'show']);
 
     // GET /vendors/{vendor_id}/switches
     $app->get('/vendors/{vendor_id}/switches', [VendorsController::class, 'handleGetVendorSwitches']);
