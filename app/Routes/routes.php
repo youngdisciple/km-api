@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use App\Controllers\AboutController;
+use App\Controllers\KeyboardsController;
 use App\Controllers\VendorsController;
 use App\Helpers\DateTimeHelper;
+use Firebase\JWT\Key;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -14,6 +16,10 @@ return static function (Slim\App $app): void {
     // Routes without authentication check: /login, /token
 
     // ROUTE: GET /
+
+    // TODO:
+    // Provide a root resource (that is, / ) whose content includes all the resources the WS exposes
+    // along with the full URI for each resource and their respective description.
     $app->get('/', [AboutController::class, 'handleAboutWebService']);
 
     // ROUTE: /vendors
@@ -26,6 +32,14 @@ return static function (Slim\App $app): void {
 
     // GET /vendors/{vendor_id}/switches
     $app->get('/vendors/{vendor_id}/switches', [VendorsController::class, 'handleGetVendorSwitches']);
+
+    // ROUTE: /keyboards
+
+    // GET /keyboards
+    $app->get('/keyboards', [KeyboardsController::class, 'index']);
+
+    // GET /keyboards/{keyboard_id}
+    $app->get('/keyboards/{keyboard_id}', [KeyboardsController::class, 'show']);
 
     // NOTE: callback naming pattern: handle<ActionName>, e.g. handleGetPlayers
     // ROUTE: GET /players
