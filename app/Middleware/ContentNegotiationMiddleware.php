@@ -35,7 +35,7 @@ class ContentNegotiationMiddleware implements MiddlewareInterface
         ];
 
         // TODO: Check if the web service can accept the requested representation (for now, only 'application/json').
-        $acceptHeader = $request->getHeader('Accept')[0];
+        $acceptHeader = $request->getHeader('Accept')[0] ?? '';
 
         if (!in_array($acceptHeader, $validAcceptHeaders)) {
             // Method #1
