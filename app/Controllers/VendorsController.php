@@ -3,13 +3,9 @@
 namespace App\Controllers;
 
 use App\Domain\Models\VendorsModel;
-use App\Exceptions\HttpInvalidResourceIdException;
 use App\Exceptions\HttpNotAcceptableException;
-use App\Exceptions\HttpNotFoundException as ExceptionsHttpNotFoundException;
-use App\Exceptions\InvalidResourceIdException;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
 
 class VendorsController extends BaseController
@@ -24,8 +20,6 @@ class VendorsController extends BaseController
     {
 
     }
-
-    //General methods
 
     //Callback methods: used for handling HTTP requests
    // * GET /vendors
