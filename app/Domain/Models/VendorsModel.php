@@ -42,7 +42,7 @@ class VendorsModel extends BaseModel
     {
         $sql = "SELECT * FROM switches WHERE vendor_id = :vendor_id";
 
-        return $this->fetchAll($sql, [
+        return $this->paginate($sql, [
             'vendor_id' => $vendor_id
         ]);
     }
