@@ -16,11 +16,16 @@ return static function (Slim\App $app): void {
     // ROUTE: GET /
     $app->get('/', [AboutController::class, 'handleAboutWebService']);
 
-    // ROUTE: GET /vendors
+    // ROUTE: /vendors
+
+    // GET /vendors
     $app->get('/vendors', [VendorsController::class, 'handleGetVendors']);
 
-    // ROUTE: Get /vendors/{vendor_id}
-    $app->get('/vendors/{vendor_id}', [VendorsController::class, 'handleGetVendorsById']);
+    // GET /vendors/{vendor_id}
+    $app->get('/vendors/{vendor_id}', [VendorsController::class, 'handleGetVendorById']);
+
+    // GET /vendors/{vendor_id}/switches
+    $app->get('/vendors/{vendor_id}/switches', [VendorsController::class, 'handleGetVendorSwitches']);
 
     // NOTE: callback naming pattern: handle<ActionName>, e.g. handleGetPlayers
     // ROUTE: GET /players

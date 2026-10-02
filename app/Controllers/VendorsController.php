@@ -3,6 +3,9 @@
 namespace App\Controllers;
 
 use App\Domain\Models\VendorsModel;
+use App\Exceptions\HttpInvalidResourceIdException;
+use App\Exceptions\HttpNotAcceptableException;
+use App\Exceptions\HttpNotFoundException as ExceptionsHttpNotFoundException;
 use App\Exceptions\InvalidResourceIdException;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -26,7 +29,7 @@ class VendorsController extends BaseController
 
     //Callback methods: used for handling HTTP requests
    // * GET /vendors
-   public function handleGetVendors(Request $request, Response $response) : Response {
+   public function index(Request $request, Response $response) : Response {
 
         $filters = $request->getQueryParams();
 
@@ -59,7 +62,7 @@ class VendorsController extends BaseController
         return $this->renderJson($response, $vendors);
     }
 
-    public function handleGetVendorsById(Request $request, Response $response, array $args): Response
+    public function show(Request $request, Response $response, array $args): Response
     {
         $vendor_id = $args['vendor_id'];
 
@@ -87,7 +90,7 @@ class VendorsController extends BaseController
             $error_data = [
                 'status' => 'error',
                 'code' => '400',
-                'message' => "The received vendor_id ($vendor_id) is no bueno pal."
+                'message' => "The received vendor_id ($vendor_id) is no bueno."
             ];
 
             return $this->renderJson($response, $error_data);
@@ -102,7 +105,7 @@ class VendorsController extends BaseController
             //     "There was no matching record for vendor_id ($vendor_id)"
             // );
 
-            throw new InvalidResourceIdException(
+            throw new HttpNotFoundException(
                 $request,
                 "There was no matching record for vendor_id"
             );
@@ -118,5 +121,26 @@ class VendorsController extends BaseController
         // );
 
         return $this->renderJson($response, $vendor);
+    }
+
+    public function handleGetVendorSwitches(Request $request, Response $response, array $args): Response
+    {
+        $vendor_id = $args['vendor_id'];
+
+        $pattern = "/^\d{1,9}$/";
+        if (preg_match($pattern, $vendor_id) === 0) {
+            throw new HttpNotAcceptableException(
+                $request,
+                "The provided vendor_id ($vendor_id) could not be validated."
+            );
+        }
+
+        $switches = $this->vendorsModel->getVendorSwitches($vendor_id);
+
+        if(!$switches) {
+            throw new HttpNotFoundException($request);
+        }
+
+        return $this->renderJson($response, $switches);
     }
 }

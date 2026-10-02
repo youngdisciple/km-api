@@ -37,4 +37,13 @@ class VendorsModel extends BaseModel
             'vendor_id' => $vendor_id
         ]);
     }
+
+    function getVendorSwitches(int $vendor_id): array | False
+    {
+        $sql = "SELECT * FROM switches WHERE vendor_id = :vendor_id";
+
+        return $this->fetchSingle($sql, [
+            'vendor_id' => $vendor_id
+        ]);
+    }
 }
