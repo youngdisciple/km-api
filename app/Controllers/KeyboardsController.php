@@ -17,6 +17,11 @@ class KeyboardsController extends BaseController
 
     }
 
+    /**
+    * Controller method that renders a list of keyboards
+    *
+    * @return Response A response object with the rendered list of keyboards
+    */
     public function index(Request $request, Response $response) : Response
     {
         // TODO: add filter functionality
@@ -25,6 +30,13 @@ class KeyboardsController extends BaseController
         return $this->renderJson($response, $keyboards);
     }
 
+    /**
+    * Controller method that renders a specific keyboard by it's keyboard_id.
+    *
+    * @param array $args Takes in the keyboard's id via the key 'keyboard_id'
+    *
+    * @return Response A response object with the rendered keyboard.
+    */
     public function show(Request $request, Response $response, array $args) : Response
     {
         $keyboard_id = $args['keyboard_id'];
@@ -46,6 +58,13 @@ class KeyboardsController extends BaseController
         return $this->renderJson($response, $keyboard);
     }
 
+    /**
+    * Controller method that renders a list of reviews that a specific keyboard has
+    *
+    * @param array $args Takes in the keyboard's id via the key 'keyboard_id'
+    *
+    * @return Response A response object with the rendered list of keyboard.
+    */
     public function handleGetKeyboardReviews(Request $request, Response $response, array $args) : Response
     {
         $keyboard_id = $args['keyboard_id'];

@@ -21,9 +21,14 @@ class VendorsController extends BaseController
 
     }
 
-    //Callback methods: used for handling HTTP requests
-   // * GET /vendors
-   public function index(Request $request, Response $response) : Response {
+    // NOTE: The phpdoc here doesn't need a @param for $request nor $reponse because
+    // it is handled automatically and is self explanatory.
+    /**
+    * Controller method that renders a list of vendors
+    *
+    * @return Response A response object with the rendered list of vendors
+    */
+    public function index(Request $request, Response $response) : Response {
 
         $filters = $request->getQueryParams();
 
@@ -56,6 +61,13 @@ class VendorsController extends BaseController
         return $this->renderJson($response, $vendors);
     }
 
+    /**
+    * Controller method that renders a specific vendor by it's vendor_id.
+    *
+    * @param array $args Takes in the vendor's id via the key 'vendor_id'
+    *
+    * @return Response A response object with the rendered vendor.
+    */
     public function show(Request $request, Response $response, array $args): Response
     {
         $vendor_id = $args['vendor_id'];
@@ -113,6 +125,13 @@ class VendorsController extends BaseController
         return $this->renderJson($response, $vendor);
     }
 
+    /**
+    * Controller method that renders a list of switches that a specific vendor sells
+    *
+    * @param array $args Takes in the vendor's id via the key 'vendor_id'
+    *
+    * @return Response A response object with the rendered list of switches.
+    */
     public function handleGetVendorSwitches(Request $request, Response $response, array $args): Response
     {
         $vendor_id = $args['vendor_id'];
