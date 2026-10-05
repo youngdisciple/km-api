@@ -195,7 +195,7 @@ abstract class BaseModel
         // 7. Return
 
         // 1.
-        $count = $this->count($sql);
+        $count = $this->count($sql, $args);
 
         // 2.
         $paginationHelper = new PaginationHelper($this->current_page, $this->records_per_page, $count);
