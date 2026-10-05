@@ -3,10 +3,10 @@
 namespace App\Controllers;
 
 use App\Domain\Models\VendorsModel;
-use App\Exceptions\HttpNotAcceptableException;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpNotFoundException;
+use App\Exceptions\HttpNotAcceptableException;
 
 class VendorsController extends BaseController
 {
@@ -94,14 +94,10 @@ class VendorsController extends BaseController
         //! what if the vendor was False: i.e. NOT FOUND?
         // TODO: Prepare and return a VALID HTTP error response (option #1)
         if (!$vendor) {
-            // throw new HttpNotFoundException(
-            //     $request,
-            //     "There was no matching record for vendor_id ($vendor_id)"
-            // );
 
             throw new HttpNotFoundException(
                 $request,
-                "There was no matching record for vendor_id"
+                "There was no matching record for vendor_id ($vendor_id)"
             );
         }
 
@@ -131,10 +127,14 @@ class VendorsController extends BaseController
 
         $switches = $this->vendorsModel->getVendorSwitches($vendor_id);
 
+        // NOTE: $switches returning nothing is not a concern and will not
+        // trigger this conditional statement
         if(!$switches) {
             throw new HttpNotFoundException($request);
         }
 
+        // NOTE: No need to specify status code here as renderJson defaults to
+        // statuscode = 200
         return $this->renderJson($response, $switches);
     }
 }
