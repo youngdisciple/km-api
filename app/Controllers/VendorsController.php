@@ -29,7 +29,6 @@ class VendorsController extends BaseController
     * @return Response A response object with the rendered list of vendors
     */
     public function index(Request $request, Response $response) : Response {
-
         $filters = $request->getQueryParams();
 
         if (!empty($filters)){
@@ -96,7 +95,7 @@ class VendorsController extends BaseController
             $error_data = [
                 'status' => 'error',
                 'code' => '400',
-                'message' => "The received vendor_id ($vendor_id) is no bueno."
+                'message' => "The received vendor_id ($vendor_id) is invalid."
             ];
 
             return $this->renderJson($response, $error_data);

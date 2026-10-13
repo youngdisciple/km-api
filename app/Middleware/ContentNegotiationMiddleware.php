@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace App\Middleware;
 
 use App\Exceptions\HttpNotAcceptableException;
+use App\Helpers\AcceptHeaderParser;
+use App\Helpers\Serializers\XmlSerializer;
+use App\Helpers\Serializers\YamlSerializer;
+use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Psr\Http\Message\ResponseInterface;
@@ -31,36 +35,40 @@ class ContentNegotiationMiddleware implements MiddlewareInterface
     {
         $validAcceptHeaders = [
             'application/json',
-            // TODO: Add more as the accepted header grows.
+            'application/xml',
+            'application/x-yaml'
         ];
 
-        // TODO: Check if the web service can accept the requested representation (for now, only 'application/json').
         $acceptHeader = $request->getHeader('Accept')[0] ?? '';
 
-        if (!in_array($acceptHeader, $validAcceptHeaders)) {
+        $matchingFormat = AcceptHeaderParser::getBestMatch($acceptHeader, $validAcceptHeaders);
+
+        // i.e. if null
+        if (!$matchingFormat) {
             // Method #1
-            // throw new HttpNotAcceptableException($request);
+            throw new HttpNotAcceptableException($request);
 
             // Method #2
-            $psr17Factory = new \Nyholm\Psr7\Factory\Psr17Factory();
-            $response = $psr17Factory->createResponse();// You can pass a status code to the createResponse method.
+            // $psr17Factory = new \Nyholm\Psr7\Factory\Psr17Factory();
+            // $response = $psr17Factory->createResponse();// You can pass a status code to the createResponse method.
 
-            $errorResponse = [
-                'code' => 406,
-                'message' => 'Not Acceptable',
-                'description' =>  "The server cannot produce a response matching the criteria defined in the request's content negotiation headers.",
-            ];
+            // $errorResponse = [
+            //     'code' => 406,
+            //     'message' => 'Not Acceptable',
+            //     'description' =>  "The server cannot produce a response matching the criteria defined in the request's content negotiation headers.",
+            // ];
 
-            // Taken from base controller
+            // // Taken from base controller
 
-            $payload = json_encode($errorResponse, JSON_UNESCAPED_SLASHES | JSON_PARTIAL_OUTPUT_ON_ERROR);
-            //-- Write JSON data into the response's body.
-            $response->getBody()->write($payload);
-            return $response->withStatus(406)->withAddedHeader(HEADERS_CONTENT_TYPE, APP_MEDIA_TYPE_JSON);
+            // $payload = json_encode($errorResponse, JSON_UNESCAPED_SLASHES | JSON_PARTIAL_OUTPUT_ON_ERROR);
+            // //-- Write JSON data into the response's body.
+            // $response->getBody()->write($payload);
+            // return $response->withStatus(406)->withAddedHeader(HEADERS_CONTENT_TYPE, APP_MEDIA_TYPE_JSON);
         }
 
         // Optional: Handle the incoming request
         //* ...Before middleware!
+        $request = $request->withAttribute('format', $matchingFormat);
 
         //! DO NOT remove or change the following statements.
         // Invoke the next middleware and get response
@@ -69,6 +77,29 @@ class ContentNegotiationMiddleware implements MiddlewareInterface
         // Optional: Handle the outgoing response
         //* ...After middleware!
 
-        return $response;
+        if($matchingFormat === 'application/json') {
+            return $response->withAddedHeader('Vary', 'Accept');
+        }
+
+        $body = (string) $response->getBody();
+        $data = json_decode($body, true);
+        $content = null;
+
+        if($matchingFormat === 'application/xml') {
+            $content = XmlSerializer::serialize($data);
+        }
+
+        if($matchingFormat === 'application/x-yaml') {
+            $content = YamlSerializer::serialize($data);
+        }
+
+        $psr17Factory = new Psr17Factory();
+
+        $newResponse = $psr17Factory->createResponse($response->getStatusCode());
+        $newResponse->getBody()->write($content);
+
+        return $newResponse
+            ->withHeader('Content-Type', $matchingFormat)
+            ->withAddedHeader('Vary', 'Accept');
     }
 }
