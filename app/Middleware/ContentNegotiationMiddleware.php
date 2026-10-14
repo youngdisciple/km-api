@@ -8,7 +8,7 @@ use App\Exceptions\HttpNotAcceptableException;
 use App\Helpers\AcceptHeaderParser;
 use App\Helpers\Serializers\XmlSerializer;
 use App\Helpers\Serializers\YamlSerializer;
-use Nyholm\Psr7\Factory\Psr17Factory;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Psr\Http\Message\ResponseInterface;
@@ -24,6 +24,9 @@ use Psr\Http\Server\MiddlewareInterface;
 
 class ContentNegotiationMiddleware implements MiddlewareInterface
 {
+    public function __construct(
+        private ResponseFactoryInterface $responseFactory
+    ) {}
     /**
      * Process an incoming server request.
      *
@@ -33,15 +36,9 @@ class ContentNegotiationMiddleware implements MiddlewareInterface
      */
     public function process(Request $request, RequestHandler $handler): ResponseInterface
     {
-        $validAcceptHeaders = [
-            'application/json',
-            'application/xml',
-            'application/x-yaml'
-        ];
-
         $acceptHeader = $request->getHeader('Accept')[0] ?? '';
 
-        $matchingFormat = AcceptHeaderParser::getBestMatch($acceptHeader, $validAcceptHeaders);
+        $matchingFormat = AcceptHeaderParser::getBestMatch($acceptHeader, APP_MEDIA_TYPES);
 
         // i.e. if null
         if (!$matchingFormat) {
@@ -77,7 +74,8 @@ class ContentNegotiationMiddleware implements MiddlewareInterface
         // Optional: Handle the outgoing response
         //* ...After middleware!
 
-        if($matchingFormat === 'application/json') {
+        if($matchingFormat === APP_MEDIA_TYPE_JSON) {
+            // no need to decode into php array, simply send it back
             return $response->withAddedHeader('Vary', 'Accept');
         }
 
@@ -85,20 +83,18 @@ class ContentNegotiationMiddleware implements MiddlewareInterface
         $data = json_decode($body, true);
         $content = null;
 
-        if($matchingFormat === 'application/xml') {
+        if($matchingFormat === APP_MEDIA_TYPE_XML) {
             $content = XmlSerializer::serialize($data);
         }
 
-        if($matchingFormat === 'application/x-yaml') {
+        if($matchingFormat === APP_MEDIA_TYPE_YAML) {
             $content = YamlSerializer::serialize($data);
         }
 
-        $psr17Factory = new Psr17Factory();
+        $response = $this->responseFactory->createResponse($response->getStatusCode());
+        $response->getBody()->write($content);
 
-        $newResponse = $psr17Factory->createResponse($response->getStatusCode());
-        $newResponse->getBody()->write($content);
-
-        return $newResponse
+        return $response
             ->withHeader('Content-Type', $matchingFormat)
             ->withAddedHeader('Vary', 'Accept');
     }

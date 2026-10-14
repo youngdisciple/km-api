@@ -6,24 +6,6 @@ use DOMDocument;
 use SimpleXMLElement;
 
 class XmlSerializer{
-    // if is array => recursive
-    // else,
-    /*
-    *<response>
-    *   <switches>
-    *       <switch>
-    *        <switch_id>1</switch_id>
-    *        <name>Cherry MX Red</name>
-    *        <type>Linear</type>
-    *       </switch>
-    *       <switch>
-    *        <switch_id>2</switch_id>
-    *        <name>Cherry MX Blue</name>
-    *        <type>Clicky</type>
-    *       </switch>
-    *   </switches>
-    *</response>
-    */
     private static function array_to_xml(array $data, SimpleXMLElement $xml, $parentKey = ''): void {
         foreach( $data as $key => $value) {
             $child = null;
@@ -51,6 +33,16 @@ class XmlSerializer{
         }
     }
 
+
+    /**
+    * Function that turns a php array into a xml-serialized string.
+    *
+    * @param array $data The data to be serialized
+    *
+    * @param $rootElement The root element that represents the php array, defaults to 'response'
+    *
+    * @return string The xml-serialized data
+    */
     public static function serialize (array $data, string $rootElement = 'response'): string{
         $xml = new SimpleXMLElement("<$rootElement/>");
         XmlSerializer::array_to_xml($data, $xml);

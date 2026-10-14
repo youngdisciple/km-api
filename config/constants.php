@@ -20,4 +20,8 @@ const HEADERS_CONTENT_TYPE = "Content-Type";
 //* Supported Media Types.
 const APP_MEDIA_TYPE_JSON = "application/json";
 const APP_MEDIA_TYPE_XML = "application/xml";
-const APP_MEDIA_TYPE_YAML = "application/yaml";
+const APP_MEDIA_TYPE_YAML = "application/x-yaml";
+//* Supported Media Types array.
+const APP_MEDIA_TYPES = [
+    APP_MEDIA_TYPE_JSON, APP_MEDIA_TYPE_XML, APP_MEDIA_TYPE_YAML
+];
