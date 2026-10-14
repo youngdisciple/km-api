@@ -10,7 +10,7 @@ class HttpNotAcceptableException extends HttpSpecializedException
 {
     // Fields to be overridden
     protected $code = 415;
-    protected $message = ''; // NOTE: HTTP Reason phrase
-    protected string $title = '406 Not Acceptable';
-    protected string $description = "The server cannot produce a response matching the criteria defined in the request's content negotiation headers.";
+    protected $message = 'Unsupported Media'; // NOTE: HTTP Reason phrase
+    protected string $title = '415 Unsupported Media';
+    protected string $description = "The client sent a Content-Type that the service cannot parse";
 }
