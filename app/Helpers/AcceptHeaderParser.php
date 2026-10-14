@@ -6,6 +6,15 @@ use App\Exceptions\HttpNotAcceptableException;
 
 class AcceptHeaderParser{
 
+    /*
+    * Function that parses the HTTP Accept header and determines the best matching format.
+    *
+    * @param $acceptHeader The needle
+    *
+    * @param $supportedTypes The haystack
+    *
+    * @return ?string The matched format or null if not found.
+    */
     public static function getBestMatch(string $acceptHeader, array $supportedTypes): ?string
     {
         // early return 'application/json' if no accept field
