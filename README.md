@@ -29,7 +29,7 @@ serializer (Yaml::dump).
 ## Testing with a REST client (Nouto)
 
 Install the Nouto extension in VS Code, then send each request below (append the
-base url, i.e. http://localhost/km-api/x)
+base url, e.g. http://localhost/km-api/vendors)
 
 ### JSON
 
