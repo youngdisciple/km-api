@@ -1,4 +1,4 @@
-# Mechanical Switches REST API
+# Keyboard and Mice REST API
 
 A Slim framework web service that returns resource representations in JSON, XML,
 or YAML, chosen by the client's Accept header (content negotiation, with quality
