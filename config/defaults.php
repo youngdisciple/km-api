@@ -56,4 +56,7 @@ $settings['db'] = [
     ]
 ];
 
+$settings["jwt"]["algorithm"] = "HS256";
+$settings["jwt"]["expiry"] = 3600;
+
 return $settings;

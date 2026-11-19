@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Controllers\AboutController;
+use App\Controllers\AuthController;
 use App\Controllers\KeyboardsController;
 use App\Controllers\VendorsController;
 use App\Helpers\DateTimeHelper;
@@ -47,6 +48,11 @@ return static function (Slim\App $app): void {
     $app->get(
         '/keyboards/{keyboard_id}/reviews',
         [KeyboardsController::class, 'handleGetKeyboardReviews']
+    );
+
+    $app->get(
+        '/token-test',
+        [AuthController::class, 'handleGenerateToken']
     );
 
     // NOTE: callback naming pattern: handle<ActionName>, e.g. handleGetPlayers
