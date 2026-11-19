@@ -82,4 +82,15 @@ class ValidationHelper
         $keys = array_keys($input);
         return array_keys($keys) !== $keys;
     }
+
+    public static function validateAuthHeader(string $authHeader): ?string
+    {
+        $authArr = explode(' ', $authHeader);
+
+        if(strtolower($authArr[0]) !== 'bearer') {
+            return null; // invalid header format
+        };
+
+        return $authArr[1]; //return the jwt token
+    }
 }
