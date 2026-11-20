@@ -28,6 +28,8 @@ class AuthMiddleware implements MiddlewareInterface
     {
         // TODO 1: Get the JWT secret and algorithm from $this->appSettings->get('jwt').
         $jwtSettings = $this->appSettings->get('jwt');
+        $secret = $jwtSettings['secret'];
+        $algorithm = $jwtSettings['algorithm'];
 
         // TODO 2: Get the Authorization header from the request.
         //         If the header is missing or empty, throw an HttpUnauthorizedException
@@ -47,12 +49,6 @@ class AuthMiddleware implements MiddlewareInterface
         if (!$jwt) {
             throw new HttpUnauthorizedException($request, 'Invalid token format.');
         }
-        try {
-            $jwt = JWT::decode($jwt, $this->appSettings->get('secret'));
-        } catch (Exception $e){
-            $msg = $e->getMessage();
-            throw new HttpUnauthorizedException($request, "Invalid token format. ($msg)");
-        }
 
         // TODO 4: Decode and validate the token using JWT::decode().
         //         Pass the token along with a new Key object: new Key($secret, $algorithm).
@@ -61,13 +57,21 @@ class AuthMiddleware implements MiddlewareInterface
         //         README, and import the ones you catch.
         //         For each invalid-token case (e.g., expired token, invalid signature),
         //         throw an HttpUnauthorizedException with a clear message.
+        try {
+            $jwt = JWT::decode($jwt, new Key($secret, $algorithm));
+        } catch (Exception $e){
+            $msg = $e->getMessage();
+            throw new HttpUnauthorizedException($request, "Invalid token format. ($msg)");
+        }
 
         // TODO 5: If decoding succeeds, attach the decoded claims to the request
         //         using withAttribute(). Add at minimum:
         //         - 'token_user_id': the user ID from your token's claims
         //         - 'token_email': the email from your token's claims
         //         IMPORTANT: These calls must come BEFORE calling $handler->handle().
+        $request = $request->withAttribute('token_user_id', $jwt->user_id)->withAttribute('token_email', $jwt->email);
 
         // TODO 6: Pass the modified request to the next handler and return the response.
+        return $handler->handle($request);
     }
 }

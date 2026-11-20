@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Middleware\AuthMiddleware;
 use App\Controllers\AboutController;
 use App\Controllers\AuthController;
 use App\Controllers\KeyboardsController;
@@ -9,6 +10,7 @@ use App\Controllers\VendorsController;
 use App\Helpers\DateTimeHelper;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Routing\RouteCollectorProxy;
 
 
 return static function (Slim\App $app): void {
@@ -55,20 +57,25 @@ return static function (Slim\App $app): void {
         [AuthController::class, 'handleGenerateToken']
     );
 
+    $app->group('/api', function ($group) {
+        //* ROUTE: GET /ping
+        $group->get('/ping', function (Request $request, Response $response, $args) {
+
+            dd($request);
+
+            $payload = [
+                "greetings" => "Reporting! Hello there!",
+                "now" => DateTimeHelper::now(DateTimeHelper::Y_M_D_H_M),
+                "token_email" => $request->getAttribute('token_email')
+            ];
+            $response->getBody()->write(json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_PARTIAL_OUTPUT_ON_ERROR));
+            return $response;
+        });
+    });//->add(AuthMiddleware::class);
+
     // NOTE: callback naming pattern: handle<ActionName>, e.g. handleGetPlayers
     // ROUTE: GET /players
     //$app->get('/players', [PlayersController::class, 'handleGetPlayers']);
-
-    //* ROUTE: GET /ping
-    $app->get('/ping', function (Request $request, Response $response, $args) {
-
-        $payload = [
-            "greetings" => "Reporting! Hello there!",
-            "now" => DateTimeHelper::now(DateTimeHelper::Y_M_D_H_M),
-        ];
-        $response->getBody()->write(json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_PARTIAL_OUTPUT_ON_ERROR));
-        return $response;
-    });
 
     // Example route to test error handling.
     $app->get('/error', function (Request $request, Response $response, $args) {

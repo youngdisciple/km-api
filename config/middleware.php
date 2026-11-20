@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Middleware\ContentNegotiationMiddleware;
 use App\Handlers\HttpErrorHandler;
+use App\Middleware\AuthMiddleware;
 use Slim\App;
 
 return function (App $app) {
@@ -16,6 +17,7 @@ return function (App $app) {
     // USING $app->add NOT $app->addMiddleware !!
     $app->add(ContentNegotiationMiddleware::class);
 
+    $app->add(AuthMiddleware::class);
     //!NOTE: the error handling middleware MUST be added last.
     $errorMiddleware = $app->addErrorMiddleware(true, true, true);
     $errorMiddleware->setDefaultErrorHandler(HttpErrorHandler::class);

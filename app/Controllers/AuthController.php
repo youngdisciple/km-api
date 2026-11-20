@@ -29,7 +29,8 @@ class AuthController extends BaseController
             'iat' => time(),
             'exp' => time() +  $expiry,
             // TODO: Add private claims (email, role, id, etc...)
-            'role' => 'boss'
+            'user_id' => '1234',
+            'email' => 'boss@gmail.com'
         ];
 
         // add the JWT::encode() method
